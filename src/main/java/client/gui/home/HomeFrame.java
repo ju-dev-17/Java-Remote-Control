@@ -6,9 +6,9 @@ import java.awt.*;
 import java.io.IOException;
 
 public class HomeFrame extends Frame {
-    public HomeFrame(String title, String iconName, Dimension size) throws IOException {
+    public HomeFrame(String title, String iconName, Dimension size) {
         super(title, iconName, size);
-        addPanel(new HomePanel(), BorderLayout.CENTER);
+        addPanel(new HomePanel(), BorderLayout.NORTH);
     }
 
     public static void main(String[] args) throws IOException {

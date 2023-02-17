@@ -1,35 +1,64 @@
 package client.gui.home;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.IOException;
 import java.util.Objects;
 
 public class HomePanel extends JPanel {
-    private final Image backgroundImage;
+    private final ImageIcon backgroundImage;
 
-    public HomePanel() throws IOException {
-        backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/background.png")));
-        setLayout(new GridLayout(1,1));
-        // initConnectionBtn("Get Connection");
+    public HomePanel() {
+        backgroundImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/background.png")));
+        add(background());
     }
 
-    private void initIpInputField() {
-
+    private JLabel background() {
+        JLabel label = new JLabel();
+        label.setIcon(backgroundImage);
+        label.setBounds(0, 0, getWidth(), getHeight());
+        label.add(container());
+        return label;
     }
 
-    private void initConnectionBtn(String text) {
+    private JPanel container() {
+        JPanel panel = new JPanel();
+
+        GridLayout gridLayout = new GridLayout(2, 1);
+        gridLayout.setVgap(15);
+
+        panel.setLayout(gridLayout);
+        panel.setBorder(new EmptyBorder(50, 75, 50, 75));
+
+        panel.add(textField());
+        panel.add(button());
+
+        return panel;
+    }
+
+    private JTextField textField() {
+        JTextField textField = new JTextField();
+        textField.setSize(50, 25);
+        textField.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        EmptyBorder padding = new EmptyBorder(0, 10, 0, 0);
+        textField.setBorder(padding);
+
+        return textField;
+    }
+
+    private JButton button() {
         JButton button = new JButton();
-        button.setText(text);
+        button.setText("Get Connection");
         button.setSize(50, 50);
-        add(button);
-    }
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBackground(Color.decode("#FA7268"));
+        button.setForeground(Color.WHITE);
+        button.setFocusable(false);
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        EmptyBorder padding = new EmptyBorder(10, 0, 10, 0);
+        button.setBorder(padding);
 
-        // Draw the background image.
-        g.drawImage(backgroundImage, 0, 0, this);
+        return button;
     }
 }
