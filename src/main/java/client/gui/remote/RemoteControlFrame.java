@@ -3,7 +3,6 @@ package client.gui.remote;
 import client.gui.Frame;
 
 import java.awt.*;
-import java.io.IOException;
 
 public class RemoteControlFrame extends Frame {
     public RemoteControlFrame(String title, String iconName, Dimension size) {
