@@ -1,7 +1,5 @@
 package client.gui;
 
-import client.gui.home.HomePanel;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
@@ -28,7 +26,6 @@ public class Frame extends JFrame {
 
     private void initFrame() {
         setTitle(title);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
         if (fullscreen) {
             setExtendedState(MAXIMIZED_BOTH);
             setResizable(true);
