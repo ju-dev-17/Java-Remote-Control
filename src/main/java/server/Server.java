@@ -10,21 +10,19 @@ public class Server {
     static Socket socket;
 
     public static void main(String[] args) {
-        while (true) {
-            try {
-                serverSocket = new ServerSocket(1234);
-                socket = serverSocket.accept();
-                System.out.println("Client connected");
+        try {
+            serverSocket = new ServerSocket(1234);
+            socket = serverSocket.accept();
+            System.out.println("Client connected");
 
-                InputStreamReader inServer = new InputStreamReader(socket.getInputStream());
-                BufferedReader bfServer = new BufferedReader(inServer);
+            InputStreamReader inServer = new InputStreamReader(socket.getInputStream());
+            BufferedReader bfServer = new BufferedReader(inServer);
 
-                String clientMsg = bfServer.readLine();
-                System.out.println(clientMsg);
-            } catch (Exception e) {
-                System.err.println("Error" + e.getMessage());
-                e.printStackTrace();
-            }
+            String clientMsg = bfServer.readLine();
+            System.out.println(clientMsg);
+        } catch (Exception e) {
+            System.err.println("Error" + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
