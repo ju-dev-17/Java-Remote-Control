@@ -1,28 +1,16 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
+import server.controller.FrameController;
+import server.service.FrameService;
+import server.service.socket.CustomServerSocket;
+import server.service.socket.CustomSocket;
 
 public class Server {
-    static ServerSocket serverSocket;
-    static Socket socket;
-
     public static void main(String[] args) {
-        try {
-            serverSocket = new ServerSocket(1234);
-            socket = serverSocket.accept();
-            System.out.println("Client connected");
+        CustomSocket customSocket = new CustomSocket();
+        CustomServerSocket customServerSocket = new CustomServerSocket();
 
-            InputStreamReader inServer = new InputStreamReader(socket.getInputStream());
-            BufferedReader bfServer = new BufferedReader(inServer);
-
-            String clientMsg = bfServer.readLine();
-            System.out.println(clientMsg);
-        } catch (Exception e) {
-            System.err.println("Error" + e.getMessage());
-            e.printStackTrace();
-        }
+        FrameController frameController = new FrameController(new FrameService(customServerSocket, customSocket));
+        frameController.postFrame(frameController.getFrame());
     }
 }

@@ -1,4 +1,4 @@
-package server.socket;
+package server.service.socket;
 
 import org.apache.commons.io.FileUtils;
 
@@ -13,10 +13,6 @@ import java.util.Objects;
 public class CustomSocket {
     public static List<Socket> sockets = new ArrayList<>();
 
-    public void getConnection() {
-
-    }
-
     public String convertToBase64() throws IOException {
         File inputFile = new File(Objects.requireNonNull(getClass().getResource("/frames/frame.png")).getFile());
 
@@ -27,15 +23,13 @@ public class CustomSocket {
                 .encodeToString(fileContent);
     }
 
-    public String convertToImage(String encodedString) throws IOException {
-        File outputFile = new File(Objects.requireNonNull(getClass().getResource("/frames/frame.png")).getFile());
+    public void convertToImage(String encodedString) throws IOException {
+        File outputFile = new File("/frames/frame.png");
 
         byte[] decodedBytes = Base64
                 .getDecoder()
                 .decode(encodedString);
         FileUtils.writeByteArrayToFile(outputFile, decodedBytes);
-
-        return "Converting succes.";
     }
 
     private String getHostAddress() {
@@ -45,11 +39,5 @@ public class CustomSocket {
         } catch (UnknownHostException | SocketException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        CustomSocket customSocket = new CustomSocket();
-
-        System.out.println(customSocket.convertToImage(customSocket.convertToBase64()));
     }
 }
