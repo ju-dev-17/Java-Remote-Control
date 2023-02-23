@@ -1,31 +1,40 @@
 package server.service.socket;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static server.service.socket.SocketFactory.customSockets;
+import static server.service.socket.SocketFactory.sockets;
+
 public class CustomServerSocket {
-    private ServerSocket serverSocket;
-    private Socket socket;
+    private final SocketFactory socketFactory;
 
-    /*
-       try {
-            serverSocket = new ServerSocket(1234);
-            socket = serverSocket.accept();
-            System.out.println("Client connected");
+    public CustomServerSocket(SocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
 
-            InputStreamReader inServer = new InputStreamReader(socket.getInputStream());
-            BufferedReader bfServer = new BufferedReader(inServer);
-
-            String clientMsg = bfServer.readLine();
-            System.out.println(clientMsg);
+        try(final ServerSocket serverSocket = new ServerSocket(1234)) {
+            Socket socket = serverSocket.accept();
+            sockets.add(socket);
+            this.socketFactory.createSockets();
+            // TODO: Handle this
         } catch (Exception e) {
             System.err.println("Error" + e.getMessage());
             e.printStackTrace();
         }
-    */
+    }
 
-    public CustomServerSocket() {
+    private void broadcast(String message) {
+        // TODO: Handle this
+        for (CustomSocket client : customSockets) {
+            try {
+                PrintWriter printWriter = new PrintWriter(client.getOutputStream(), true);
+                printWriter.println(message);
+                client.readMessage();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

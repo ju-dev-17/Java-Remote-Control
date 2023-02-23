@@ -1,6 +1,6 @@
-package client.gui.remote;
+package client.gui;
 
-import client.gui.Frame;
+import client.gui.helper.Frame;
 
 import java.awt.*;
 
