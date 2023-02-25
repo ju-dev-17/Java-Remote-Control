@@ -8,7 +8,7 @@ public class Server {
         ServerSocketService serverSocketService = new ServerSocketService();
         ServerSocketController serverSocketController = new ServerSocketController(serverSocketService);
 
-        serverSocketController.getService().startServer();
-        serverSocketController.getService().broadcast("TEST");
+        serverSocketController.startServer();
+        serverSocketController.broadcast("TEST");
     }
 }

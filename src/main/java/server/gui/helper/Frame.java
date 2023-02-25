@@ -1,12 +1,10 @@
-package client.gui.helper;
+package server.gui.helper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 public class Frame extends JFrame {
-    boolean fullscreen = false;
-
     String title;
     String iconName;
     Dimension size;
@@ -26,13 +24,8 @@ public class Frame extends JFrame {
 
     private void initFrame() {
         setTitle(title);
-        if (fullscreen) {
-            setExtendedState(MAXIMIZED_BOTH);
-            setResizable(true);
-        } else {
-            setSize(size);
-            setResizable(false);
-        }
+        setExtendedState(MAXIMIZED_BOTH);
+        setResizable(true);
         setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/" + iconName))).getImage());
         setLocationRelativeTo(null);
     }
@@ -44,13 +37,12 @@ public class Frame extends JFrame {
         add(mainPanel);
     }
 
-    public void setFullscreen(boolean fullscreen) {
-        this.fullscreen = fullscreen;
-        initFrame();
+    public JPanel getMainPanel() {
+        return mainPanel;
     }
 
-    public void addPanel(JPanel panel, String layout) {
-        mainPanel.add(panel, layout);
+    public void addPanel(JPanel panel) {
+        mainPanel.add(panel);
         mainPanel.updateUI();
     }
 }

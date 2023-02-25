@@ -1,20 +1,13 @@
-package server.service.socket.utils;
+package client.utils;
 
 import org.apache.commons.io.FileUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Objects;
 
 public class FrameUtils {
-    public void convertToFile(BufferedImage bufferedImage) throws IOException {
-        File outputfile = new File("/frames/frame.png");
-        ImageIO.write(bufferedImage, "png", outputfile);
-    }
-
     public String convertToBase64() throws IOException {
         File inputFile = new File(Objects.requireNonNull(getClass().getResource("/frames/frame.png")).getFile());
 

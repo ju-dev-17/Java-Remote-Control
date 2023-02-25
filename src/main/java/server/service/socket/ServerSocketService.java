@@ -1,14 +1,13 @@
 package server.service.socket;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServerSocketService {
-    public List<Socket> clients = new ArrayList<>();
+    private final List<Socket> clients = new ArrayList<>();
     private ServerSocket serverSocket;
 
     public void startServer() {
@@ -18,7 +17,11 @@ public class ServerSocketService {
             Socket client = serverSocket.accept();
             clients.add(client);
 
-            broadcast(client.getInetAddress().toString());
+            broadcast("Client connected: " + client.getInetAddress().getHostAddress());
+
+            if (client.isConnected()) {
+                System.out.println(readMessage());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,5 +36,23 @@ public class ServerSocketService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void sendMessage() {
+        // TODO: Send key & mouse infos to viewed client
+    }
+
+    public String readMessage() {
+        // TODO: Handle this
+        for (Socket client : clients) {
+            try {
+                DataInputStream in = new DataInputStream(new BufferedInputStream(client.getInputStream()));
+                return in.readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "";
     }
 }

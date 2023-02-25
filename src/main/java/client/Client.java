@@ -1,9 +1,11 @@
 package client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import server.service.socket.utils.FrameUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
@@ -12,6 +14,8 @@ public class Client {
 
     public static Socket client;
     public static PrintWriter printWriter;
+
+    public static FrameUtils frameUtils = new FrameUtils();
 
     public static String getHostAddress() {
         try(final DatagramSocket socket = new DatagramSocket()){
@@ -22,14 +26,23 @@ public class Client {
         }
     }
 
+    public static void createScreenshot() throws AWTException, IOException {
+        BufferedImage screenCapture = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+        frameUtils.convertToFile(screenCapture);
+    }
+
+    public static void sendScreenshot() throws IOException {
+        sendMessage(frameUtils.convertToBase64());
+    }
+
     public static void sendMessage(String message) {
         printWriter.println(message);
         printWriter.flush();
     }
 
-    public static void start() {
+    public static void startClient() {
         try {
-            System.out.println("Try to connect...");
+            System.out.println("Trying to connect...");
 
             client = new Socket(getHostAddress(), 1234);
 
@@ -43,18 +56,18 @@ public class Client {
             String modifiedSentence = bf.readLine();
 
             while (modifiedSentence != null) {
-                System.out.println("FROM SERVER: " + modifiedSentence);
+                System.out.println("SERVER -> " + modifiedSentence);
                 modifiedSentence = bf.readLine();
 
                 String messageToSend = scanner.nextLine();
                 sendMessage(messageToSend);
             }
         } catch (Exception e) {
-            start();
+            startClient();
         }
     }
 
     public static void main(String[] args) {
-        start();
+        startClient();
     }
 }
