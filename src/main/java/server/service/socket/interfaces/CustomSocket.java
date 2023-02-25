@@ -1,4 +1,4 @@
-package server.service.socket;
+package server.service.socket.interfaces;
 
 import java.io.IOException;
 import java.io.OutputStream;

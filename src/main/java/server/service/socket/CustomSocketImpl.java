@@ -1,5 +1,7 @@
 package server.service.socket;
 
+import server.service.socket.interfaces.CustomSocket;
+
 import java.io.*;
 import java.net.Socket;
 

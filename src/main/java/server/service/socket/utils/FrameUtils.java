@@ -1,4 +1,4 @@
-package server.service.handler;
+package server.service.socket.utils;
 
 import org.apache.commons.io.FileUtils;
 
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Objects;
 
-public class FrameHandler {
+public class FrameUtils {
     public String convertToBase64() throws IOException {
         File inputFile = new File(Objects.requireNonNull(getClass().getResource("/frames/frame.png")).getFile());
 
