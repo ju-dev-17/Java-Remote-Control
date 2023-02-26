@@ -7,24 +7,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerSocketService {
-    private final List<Socket> clients = new ArrayList<>();
-    private ServerSocket serverSocket;
+    public static final List<Socket> clients = new ArrayList<>();
 
     public void startServer() {
-        try {
-            serverSocket = new ServerSocket(1234);
-            // Listening for connections...
-            Socket client = serverSocket.accept();
-            clients.add(client);
+        while (true) {
+            try (final ServerSocket serverSocket = new ServerSocket(1234)) {
+                Socket client = serverSocket.accept();
+                clients.add(client);
+                System.out.println("✅ client[" + client.getInetAddress().getHostAddress() + "] successfully connected.");
+                broadcast("✅ client[" + client.getInetAddress().getHostAddress() + "] successfully connected.");
 
-            broadcast("Client connected: " + client.getInetAddress().getHostAddress());
+                Thread clientThread = new Thread(() -> {
+                    try {
+                        handleClient(client);
+                        // TODO: Does not work. Handle it!
+                        String disconnected = "🔌❌ client[" + client.getInetAddress().getHostAddress()  + "] disconnected.";
+                        System.out.println(disconnected);
+                        broadcast(disconnected);
+                    } catch (IOException ex) {
+                        System.out.println("Error handling client: " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
+                });
 
-            if (client.isConnected()) {
-                System.out.println(readMessage());
+                clientThread.start();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+    }
+
+    private boolean handleClient(Socket clientSocket) throws IOException {
+        BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String inputLine;
+
+        while ((inputLine = input.readLine()) != null) {
+            System.out.println("Received message from client: " + inputLine);
+        }
+
+        clientSocket.close();
+        return clientSocket.isClosed();
     }
 
     public void broadcast(String message) {
@@ -36,23 +58,5 @@ public class ServerSocketService {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void sendMessage() {
-        // TODO: Send key & mouse infos to viewed client
-    }
-
-    public String readMessage() {
-        // TODO: Handle this
-        for (Socket client : clients) {
-            try {
-                DataInputStream in = new DataInputStream(new BufferedInputStream(client.getInputStream()));
-                return in.readUTF();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return "";
     }
 }

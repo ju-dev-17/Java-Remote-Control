@@ -2,7 +2,6 @@ package client;
 
 import server.service.socket.utils.FrameUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -10,8 +9,6 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Client {
-    public static Scanner scanner;
-
     public static Socket client;
     public static PrintWriter printWriter;
 
@@ -42,26 +39,36 @@ public class Client {
 
     public static void startClient() {
         try {
-            System.out.println("Trying to connect...");
-
             client = new Socket(getHostAddress(), 1234);
 
             printWriter = new PrintWriter(client.getOutputStream());
 
-            InputStreamReader in = new InputStreamReader(client.getInputStream());
-            BufferedReader bf = new BufferedReader(in);
+            Thread messanger = new Thread(() -> {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    String messageToSend = scanner.nextLine();
+                    sendMessage(messageToSend);
+                }
+            });
 
-            scanner = new Scanner(System.in);
+            Thread messageListener = new Thread(() -> {
+                try {
+                    InputStreamReader in = new InputStreamReader(client.getInputStream());
+                    BufferedReader bf = new BufferedReader(in);
 
-            String modifiedSentence = bf.readLine();
+                    String modifiedSentence = bf.readLine();
 
-            while (modifiedSentence != null) {
-                System.out.println("SERVER -> " + modifiedSentence);
-                modifiedSentence = bf.readLine();
+                    while (modifiedSentence != null) {
+                        System.out.println("SERVER >> " + modifiedSentence);
+                        modifiedSentence = bf.readLine();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
-                String messageToSend = scanner.nextLine();
-                sendMessage(messageToSend);
-            }
+            messanger.start();
+            messageListener.start();
         } catch (Exception e) {
             startClient();
         }

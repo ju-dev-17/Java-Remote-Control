@@ -9,6 +9,6 @@ public class Server {
         ServerSocketController serverSocketController = new ServerSocketController(serverSocketService);
 
         serverSocketController.startServer();
-        serverSocketController.broadcast("TEST");
+        serverSocketController.broadcast("Hello");
     }
 }
