@@ -1,5 +1,7 @@
 package server.service.socket;
 
+import server.service.socket.utils.FrameUtils;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,6 +10,8 @@ import java.util.List;
 
 public class ServerSocketService {
     public static final List<Socket> clients = new ArrayList<>();
+
+    private final FrameUtils frameUtils = new FrameUtils();
 
     public void startServer() {
         while (true) {
@@ -37,19 +41,20 @@ public class ServerSocketService {
         }
     }
 
-    private boolean handleClient(Socket clientSocket) throws IOException {
+    private void handleClient(Socket clientSocket) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String inputLine;
 
         while ((inputLine = input.readLine()) != null) {
-            System.out.println("Received message from client: " + inputLine);
+            try {
+                frameUtils.convertToImage(inputLine);
+            } catch (IOException ignored) {}
         }
 
         clientSocket.close();
-        return clientSocket.isClosed();
     }
 
-    public void broadcast(String message) {
+    private void broadcast(String message) {
         for (Socket client : clients) {
             try {
                 PrintWriter printWriter = new PrintWriter(client.getOutputStream(), true);

@@ -12,8 +12,4 @@ public class ServerSocketController {
     public void startServer() {
         service.startServer();
     }
-
-    public void broadcast(String message) {
-        service.broadcast(message);
-    }
 }

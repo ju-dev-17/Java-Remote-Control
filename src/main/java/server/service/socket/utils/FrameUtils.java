@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
@@ -26,11 +27,28 @@ public class FrameUtils {
     }
 
     public void convertToImage(String encodedString) throws IOException {
-        File outputFile = new File("/frames/frame.png");
-
         byte[] decodedBytes = Base64
                 .getDecoder()
                 .decode(encodedString);
-        FileUtils.writeByteArrayToFile(outputFile, decodedBytes);
+
+        try {
+            BufferedImage image;
+            if (decodedBytes != null && decodedBytes.length > 0) {
+                // read the decoded bytes and load them into the BufferedImage object
+                image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
+                if (image != null) {
+                    // save the BufferedImage object as an image file
+                    File outputfile = new File("./image.jpg");
+                    ImageIO.write(image, "jpg", outputfile);
+                    System.out.println("Image saved successfully.");
+                } else {
+                    System.out.println("Failed to read image.");
+                }
+            } else {
+                System.out.println("No decoded bytes found.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
