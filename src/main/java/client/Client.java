@@ -1,28 +1,23 @@
 package client;
 
+import client.listener.Messanger;
 import client.utils.FrameUtils;
+import client.utils.HostUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class Client {
-    public static Socket client;
-    public static PrintWriter printWriter;
+    static Socket client;
+    static PrintWriter printWriter;
 
-    public static FrameUtils frameUtils = new FrameUtils();
+    static final FrameUtils frameUtils = new FrameUtils();
+    static final HostUtils hostUtils = new HostUtils();
+    static final Messanger messanger = new Messanger();
 
-    public static Thread messanger = new Thread(() -> {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String messageToSend = scanner.nextLine();
-            sendMessage(messageToSend);
-        }
-    });
-
-    public static Thread messageListener = new Thread(() -> {
+    static Thread messageListener = new Thread(() -> {
         try {
             InputStreamReader in = new InputStreamReader(client.getInputStream());
             BufferedReader bf = new BufferedReader(in);
@@ -37,18 +32,6 @@ public class Client {
             throw new RuntimeException(e);
         }
     });
-
-    public static InputListener inputListener = new InputListener();
-    public static MouseClickListener mouseClickListener = new MouseClickListener();
-
-    public static String getHostAddress() {
-        try(final DatagramSocket socket = new DatagramSocket()){
-            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
-            return socket.getLocalAddress().getHostAddress();
-        } catch (UnknownHostException | SocketException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static void createScreenshot() throws AWTException {
         BufferedImage screenCapture = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
@@ -66,13 +49,11 @@ public class Client {
 
     public static void startClient() {
         try {
-            client = new Socket(getHostAddress(), 1234);
+            client = new Socket(hostUtils.getHostAddress(), 1234);
             printWriter = new PrintWriter(client.getOutputStream());
 
-            messanger.start();
+            messanger.thread.start();
             messageListener.start();
-            inputListener.thread.start();
-            mouseClickListener.thread.start();
         } catch (Exception e) {
             startClient();
         }

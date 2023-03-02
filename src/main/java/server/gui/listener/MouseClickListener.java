@@ -1,9 +1,8 @@
-package client;
+package server.gui.listener;
 
 import java.awt.*;
 
 public class MouseClickListener implements Runnable {
-
     public Thread thread;
 
     public MouseClickListener() {
