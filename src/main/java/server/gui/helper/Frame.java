@@ -24,25 +24,35 @@ public class Frame extends JFrame {
 
     private void initFrame() {
         setTitle(title);
-        setExtendedState(MAXIMIZED_BOTH);
-        setResizable(true);
+        setSize(getMaximumSize());
         setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/" + iconName))).getImage());
-        setLocationRelativeTo(null);
     }
 
     private void initMainPanel() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+        createLayout(mainPanel);
 
         add(mainPanel);
     }
 
-    public JPanel getMainPanel() {
-        return mainPanel;
+    private void createLayout(JPanel panel) {
+        GridBagLayout gbl = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbl.setConstraints(panel, gbc);
+        panel.setLayout(gbl);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/placeholder.png")))), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        JPanel info = new JPanel();
+        info.add(new JLabel("F2 = LOCK | F1 = UNLOCK"));
+        info.setBackground(Color.WHITE);
+        info.setSize(getMaximumSize());
+        panel.add(info, gbc);
     }
 
-    public void addPanel(JPanel panel) {
-        mainPanel.add(panel);
-        mainPanel.updateUI();
+    public JPanel getMainPanel() {
+        return mainPanel;
     }
 }

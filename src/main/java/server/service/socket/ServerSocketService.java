@@ -24,10 +24,6 @@ public class ServerSocketService {
                 Thread clientThread = new Thread(() -> {
                     try {
                         handleClient(client);
-                        // TODO: Does not work. Handle it!
-                        String disconnected = "🔌❌ client[" + client.getInetAddress().getHostAddress()  + "] disconnected.";
-                        System.out.println(disconnected);
-                        broadcast(disconnected);
                     } catch (IOException ex) {
                         System.out.println("Error handling client: " + ex.getMessage());
                         ex.printStackTrace();

@@ -2,67 +2,48 @@ package server.gui;
 
 import server.gui.helper.Frame;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class RemoteControlFrame extends Frame {
-    private final List<JPanel> screens;
-    private final JPanel gridPanel;
+    public RemoteControlFrame() {
+        super("Remote Control - Controller", "bug.png", new Dimension());
 
-    public RemoteControlFrame(List<JPanel> screens, String title, String iconName, Dimension size) {
-        super(title, iconName, size);
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
 
-        this.screens = screens;
+            }
 
-        this.gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(3, 3));
+            @Override
+            public void keyPressed(KeyEvent e) {
+                handleLockKeys(e.getKeyCode());
+            }
 
-        for (JPanel screen : screens) {
-            gridPanel.add(screen);
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+    }
+
+    private void handleLockKeys(int keyCode) {
+        if (keyCode == 112) { // F1
+            getGraphicsConfiguration().getDevice().setFullScreenWindow(null);
+            setBounds(0, 0, getWidth(), getHeight());
+        } else if (keyCode == 113) { // F2
+
+            setBounds(getGraphicsConfiguration().getBounds());
+            getGraphicsConfiguration().getDevice().setFullScreenWindow(this);
         }
-
-        this.addPanel(gridPanel);
     }
 
-    public void addScreen(JPanel screen) {
-        gridPanel.add(screen);
-        this.getMainPanel().updateUI();
-    }
-
-    public void updateScreen(int index, File newFrame) throws IOException {
-        JPanel updatedScreen = new JPanel();
-        JLabel frameLabel = new JLabel(new ImageIcon(ImageIO.read(newFrame)));
-        updatedScreen.add(frameLabel);
-        screens.add(index, updatedScreen);
+    public void refreshScreen() {
         this.getMainPanel().updateUI();
     }
 
     public static void main(String[] args) {
-        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(RemoteControlFrame.class.getResource("/frames/frame.png"))); // load the image to a imageIcon
-        Image image = imageIcon.getImage(); // transform it
-        Image newImg = image.getScaledInstance(1920, 1080,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-        imageIcon = new ImageIcon(newImg);  // transform it back
-
-        JLabel frame = new JLabel(imageIcon);
-
-        JPanel screen = new JPanel();
-        screen.setSize(500, 500);
-        screen.add(frame);
-
-        JPanel screen2 = new JPanel();
-        screen2.setSize(500, 500);
-        screen2.add(frame);
-
-         new RemoteControlFrame(
-                 List.of(screen, screen2),
-                "Remote Control - Controller",
-                "bug.png",
-                new Dimension()
-        );
+         new RemoteControlFrame();
     }
 }
