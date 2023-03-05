@@ -42,14 +42,9 @@ public class Frame extends JFrame {
         panel.setLayout(gbl);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panel.add(new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/placeholder.png")))), gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        JPanel info = new JPanel();
-        info.add(new JLabel("F2 = LOCK | F1 = UNLOCK"));
-        info.setBackground(Color.WHITE);
-        info.setSize(getMaximumSize());
-        panel.add(info, gbc);
+        JLabel placeholder = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getResource("/frames/frame.png"))));
+        placeholder.setName("Placeholder");
+        panel.add(placeholder, gbc);
     }
 
     public JPanel getMainPanel() {
