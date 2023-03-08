@@ -1,5 +1,7 @@
 package server.service.socket;
 
+import server.gui.RemoteControlFrame;
+import server.gui.model.ClientDataModel;
 import server.service.socket.utils.FrameUtils;
 
 import java.io.*;
@@ -37,11 +39,20 @@ public class ServerSocketService {
         }
     }
 
+    private void sendClientData(Socket clientSocket, ClientDataModel data) throws IOException {
+        PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+        printWriter.println(data);
+        // TODO: Mach hier weiter
+    }
+
     private void handleClient(Socket clientSocket) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String inputLine;
 
+        RemoteControlFrame remoteControlFrame = new RemoteControlFrame();
+
         while ((inputLine = input.readLine()) != null) {
+            sendClientData(clientSocket, remoteControlFrame.getClientDataModel());
             try {
                 frameUtils.convertToImage(inputLine);
             } catch (IOException ignored) {}

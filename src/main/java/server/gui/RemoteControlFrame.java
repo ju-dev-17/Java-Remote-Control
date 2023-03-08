@@ -1,22 +1,34 @@
 package server.gui;
 
 import server.gui.helper.Frame;
+import server.gui.model.ClientDataModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Objects;
 
 public class RemoteControlFrame extends Frame {
+    private final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+    private final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+            cursorImg, new Point(0, 0), "blank cursor");
+
+    private Point mousePosition;
+    private String pressendKey;
+
     public RemoteControlFrame() {
         super("Remote Control - Controller", "bug.png", new Dimension());
 
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-
+                pressendKey = String.valueOf(e.getKeyChar());
             }
 
             @Override
@@ -29,15 +41,31 @@ public class RemoteControlFrame extends Frame {
 
             }
         });
+
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                super.mouseMoved(e);
+                mousePosition = e.getPoint();
+            }
+        });
     }
 
     private void handleLockKeys(int keyCode) {
         if (keyCode == 112) { // F1 = UNLOCK
             getGraphicsConfiguration().getDevice().setFullScreenWindow(null);
             setBounds(0, 0, getWidth(), getHeight());
+            getContentPane().setCursor(Cursor.getDefaultCursor());
         } else if (keyCode == 113) { // F2 = LOCK
             setBounds(getGraphicsConfiguration().getBounds());
             getGraphicsConfiguration().getDevice().setFullScreenWindow(this);
+            getContentPane().setCursor(blankCursor);
         }
         updateScreenImage();
     }
@@ -56,7 +84,7 @@ public class RemoteControlFrame extends Frame {
         }
     }
 
-    public static void main(String[] args) {
-         new RemoteControlFrame();
+    public ClientDataModel getClientDataModel() {
+        return new ClientDataModel(mousePosition, pressendKey);
     }
 }
