@@ -25,15 +25,18 @@ public class RemoteControlFrame extends Frame {
     public RemoteControlFrame() {
         super("Remote Control - Controller", "bug.png", new Dimension());
 
+        mousePosition = MouseInfo.getPointerInfo().getLocation();
+
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                pressendKey = String.valueOf(e.getKeyChar());
+
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
                 handleLockKeys(e.getKeyCode());
+                pressendKey = String.valueOf(e.getKeyChar());
             }
 
             @Override
@@ -42,17 +45,20 @@ public class RemoteControlFrame extends Frame {
             }
         });
 
-        this.addMouseListener(new MouseAdapter() {
+        getMainPanel().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-
             }
+        });
 
+        getMainPanel().addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                super.mouseMoved(e);
-                mousePosition = e.getPoint();
+                if (getMainPanel().contains(e.getPoint())) {
+                    // mouse is over the panel, do something
+                    mousePosition = e.getPoint();
+                }
             }
         });
     }
@@ -86,5 +92,9 @@ public class RemoteControlFrame extends Frame {
 
     public ClientDataModel getClientDataModel() {
         return new ClientDataModel(mousePosition, pressendKey);
+    }
+
+    public static void main(String[] args) {
+        new RemoteControlFrame();
     }
 }

@@ -15,6 +15,8 @@ public class ServerSocketService {
 
     private final FrameUtils frameUtils = new FrameUtils();
 
+    private final RemoteControlFrame remoteControlFrame = new RemoteControlFrame();
+
     public void startServer() {
         while (true) {
             try (final ServerSocket serverSocket = new ServerSocket(1234)) {
@@ -32,7 +34,21 @@ public class ServerSocketService {
                     }
                 });
 
+                Thread serverMessanger = new Thread(() -> {
+                    try {
+                        ClientDataModel data = remoteControlFrame.getClientDataModel();
+                        while (true) {
+                            if (remoteControlFrame.getClientDataModel() != data) {
+                                sendClientData(client, remoteControlFrame.getClientDataModel());
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
                 clientThread.start();
+                serverMessanger.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -41,21 +57,15 @@ public class ServerSocketService {
 
     private void sendClientData(Socket clientSocket, ClientDataModel data) throws IOException {
         PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-        printWriter.println(data);
-        // TODO: Mach hier weiter
+        printWriter.println(data.getMousePosition().x + "," + data.getMousePosition().y);
     }
 
     private void handleClient(Socket clientSocket) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String inputLine;
 
-        RemoteControlFrame remoteControlFrame = new RemoteControlFrame();
-
         while ((inputLine = input.readLine()) != null) {
-            sendClientData(clientSocket, remoteControlFrame.getClientDataModel());
-            try {
-                frameUtils.convertToImage(inputLine);
-            } catch (IOException ignored) {}
+
         }
 
         clientSocket.close();

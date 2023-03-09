@@ -6,42 +6,48 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Socket;
 
 import static client.Client.sendMessage;
 
 public class ServerListener implements Runnable {
     public Thread thread;
     private final FrameUtils frameUtils;
-    private final InputStream clientInputStream;
+    private final Socket clientSocket;
 
-    public ServerListener(InputStream inputStream) {
+    private final Robot robot;
+
+    public ServerListener(Socket clientSocket) throws AWTException {
         this.thread = new Thread(this);
         this.frameUtils = new FrameUtils();
-        this.clientInputStream = inputStream;
+        this.clientSocket = clientSocket;
+        this.robot = new Robot();
     }
 
     @Override
     public void run() {
         try {
-            InputStreamReader in = new InputStreamReader(clientInputStream);
+            InputStreamReader in = new InputStreamReader(clientSocket.getInputStream());
             BufferedReader bf = new BufferedReader(in);
 
             String serverMessage;
 
             while ((serverMessage = bf.readLine()) != null) {
-                if (!serverMessage.isEmpty() || !serverMessage.isBlank()) {
-
-                }
+                String[] message = serverMessage.split(",");
+                System.out.println(message);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void createScreenshot() throws AWTException {
-        BufferedImage screenCapture = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+    private void handleServerResponse(int x, int y) {
+        robot.mouseMove(x, y);
+    }
+
+    private void createScreenshot() {
+        BufferedImage screenCapture = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
         frameUtils.convertToFile(screenCapture);
     }
 
