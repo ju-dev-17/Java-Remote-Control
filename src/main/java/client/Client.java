@@ -7,30 +7,29 @@ import java.io.*;
 import java.net.*;
 
 public class Client {
-    static final HostUtils hostUtils = new HostUtils();
-    static ServerListener serverListener;
+    private final HostUtils hostUtils;
+    private final int port;
 
-    static Socket client;
-    static PrintWriter printWriter;
-
-    public static void sendMessage(String message) {
-        printWriter.println(message);
-        printWriter.flush();
+    public Client(int port) {
+        this.hostUtils = new HostUtils();
+        this.port = port;
     }
 
-    public static void startClient() {
-        try {
-            client = new Socket(hostUtils.getHostAddress(), 1234);
-            printWriter = new PrintWriter(client.getOutputStream());
-            serverListener = new ServerListener(client);
-
-            serverListener.thread.start();
+    public void startClient() {
+        try (Socket client = new Socket(hostUtils.getHostAddress(), port)) {
+            PrintWriter printWriter = new PrintWriter(client.getOutputStream());
+            InputStreamReader inputStreamReader = new InputStreamReader(client.getInputStream());
+            // Start server listener
+            new ServerListener(printWriter, inputStreamReader);
         } catch (Exception e) {
             startClient();
         }
     }
 
     public static void main(String[] args) {
-        startClient();
+        int PORT = 1234; // Configure port here
+
+        Client client = new Client(PORT);
+        client.startClient();
     }
 }

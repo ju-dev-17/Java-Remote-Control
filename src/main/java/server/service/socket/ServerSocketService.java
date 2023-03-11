@@ -2,21 +2,19 @@ package server.service.socket;
 
 import server.gui.RemoteControlFrame;
 import server.gui.model.ClientDataModel;
-import server.service.socket.utils.FrameUtils;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServerSocketService {
     public static final List<Socket> clients = new ArrayList<>();
 
-    private final FrameUtils frameUtils = new FrameUtils();
-
     private final RemoteControlFrame remoteControlFrame = new RemoteControlFrame();
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public void startServer() {
         while (true) {
             try (final ServerSocket serverSocket = new ServerSocket(1234)) {
@@ -29,7 +27,6 @@ public class ServerSocketService {
                     try {
                         handleClient(client);
                     } catch (IOException ex) {
-                        System.out.println("Error handling client: " + ex.getMessage());
                         ex.printStackTrace();
                     }
                 });
@@ -55,6 +52,17 @@ public class ServerSocketService {
         }
     }
 
+    private void broadcast(String message) {
+        for (Socket client : clients) {
+            try {
+                PrintWriter printWriter = new PrintWriter(client.getOutputStream(), true);
+                printWriter.println(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void sendClientData(Socket clientSocket, ClientDataModel data) throws IOException {
         PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
         printWriter.println(data.getMousePosition().x + "," + data.getMousePosition().y);
@@ -65,20 +73,9 @@ public class ServerSocketService {
         String inputLine;
 
         while ((inputLine = input.readLine()) != null) {
-
+            System.out.println(inputLine);
         }
 
         clientSocket.close();
-    }
-
-    private void broadcast(String message) {
-        for (Socket client : clients) {
-            try {
-                PrintWriter printWriter = new PrintWriter(client.getOutputStream(), true);
-                printWriter.println(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

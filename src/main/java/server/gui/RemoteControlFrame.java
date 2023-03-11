@@ -1,6 +1,6 @@
 package server.gui;
 
-import server.gui.helper.Frame;
+import server.gui.model.helper.Frame;
 import server.gui.model.ClientDataModel;
 
 import javax.swing.*;

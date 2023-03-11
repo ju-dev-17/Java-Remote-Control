@@ -1,4 +1,4 @@
-package server.gui.helper;
+package server.gui.model.helper;
 
 import javax.swing.*;
 import java.awt.*;

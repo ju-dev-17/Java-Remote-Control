@@ -7,43 +7,37 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Socket;
-
-import static client.Client.sendMessage;
+import java.io.PrintWriter;
+import java.util.Arrays;
 
 public class ServerListener implements Runnable {
-    public Thread thread;
-    private final FrameUtils frameUtils;
-    private final Socket clientSocket;
+    private final Thread thread = new Thread(this);
+    private final FrameUtils frameUtils = new FrameUtils();
+    private final Robot robot = new Robot();
 
-    private final Robot robot;
+    private final PrintWriter printWriter;
+    private final InputStreamReader inputStreamReader;
 
-    public ServerListener(Socket clientSocket) throws AWTException {
-        this.thread = new Thread(this);
-        this.frameUtils = new FrameUtils();
-        this.clientSocket = clientSocket;
-        this.robot = new Robot();
+    public ServerListener(PrintWriter printWriter, InputStreamReader inputStreamReader) throws AWTException {
+        this.printWriter = printWriter;
+        this.inputStreamReader = inputStreamReader;
     }
 
-    @Override
-    public void run() {
-        try {
-            InputStreamReader in = new InputStreamReader(clientSocket.getInputStream());
-            BufferedReader bf = new BufferedReader(in);
+    private void sendMessage(String message) {
+        printWriter.println(message);
+        printWriter.flush();
+    }
 
-            String serverMessage;
+    private void handleMessage(String message) {
+        // Process raw message
+        String[] messageContent = message.split(",");
+        // 1: int, 2: int, 3: boolean || String, 4: String || boolean
+        if (messageContent[2].equals("true") || messageContent[2].equals("false")) {
 
-            while ((serverMessage = bf.readLine()) != null) {
-                String[] message = serverMessage.split(",");
-                System.out.println(message);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else if (messageContent[2].equals("t")) {
+
         }
-    }
-
-    private void handleServerResponse(int x, int y) {
-        robot.mouseMove(x, y);
+        robot.mouseMove(Integer.parseInt(messageContent[0]), Integer.parseInt(messageContent[1]));
     }
 
     private void createScreenshot() {
@@ -53,5 +47,21 @@ public class ServerListener implements Runnable {
 
     private void sendScreenshot() throws IOException {
         sendMessage(frameUtils.convertToBase64("/frames/frame.png"));
+    }
+
+    @Override
+    public void run() {
+        thread.start();
+        try {
+            BufferedReader bf = new BufferedReader(inputStreamReader);
+
+            String serverMessage;
+
+            while ((serverMessage = bf.readLine()) != null) {
+                handleMessage(serverMessage);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
