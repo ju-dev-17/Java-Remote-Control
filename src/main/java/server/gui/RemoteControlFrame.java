@@ -1,6 +1,6 @@
 package server.gui;
 
-import server.gui.model.helper.Frame;
+import server.gui.helper.Frame;
 import server.gui.model.ClientDataModel;
 
 import javax.swing.*;
@@ -20,7 +20,8 @@ public class RemoteControlFrame extends Frame {
             cursorImg, new Point(0, 0), "blank cursor");
 
     private Point mousePosition;
-    private String pressendKey;
+    private int mouseClick;
+    private int pressendKey;
 
     public RemoteControlFrame() {
         super("Remote Control - Controller", "bug.png", new Dimension());
@@ -36,7 +37,7 @@ public class RemoteControlFrame extends Frame {
             @Override
             public void keyPressed(KeyEvent e) {
                 handleLockKeys(e.getKeyCode());
-                pressendKey = String.valueOf(e.getKeyChar());
+                pressendKey = e.getKeyCode();
             }
 
             @Override
@@ -49,6 +50,7 @@ public class RemoteControlFrame extends Frame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                mouseClick = e.getButton();
             }
         });
 
@@ -69,8 +71,8 @@ public class RemoteControlFrame extends Frame {
             setBounds(0, 0, getWidth(), getHeight());
             getContentPane().setCursor(Cursor.getDefaultCursor());
         } else if (keyCode == 113) { // F2 = LOCK
-            setBounds(getGraphicsConfiguration().getBounds());
             getGraphicsConfiguration().getDevice().setFullScreenWindow(this);
+            setBounds(getGraphicsConfiguration().getBounds());
             getContentPane().setCursor(blankCursor);
         }
         updateScreenImage();
@@ -91,10 +93,6 @@ public class RemoteControlFrame extends Frame {
     }
 
     public ClientDataModel getClientDataModel() {
-        return new ClientDataModel(mousePosition, pressendKey);
-    }
-
-    public static void main(String[] args) {
-        new RemoteControlFrame();
+        return new ClientDataModel(mousePosition, mouseClick, pressendKey);
     }
 }

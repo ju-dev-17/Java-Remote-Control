@@ -8,11 +8,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 public class ServerListener implements Runnable {
-    private final Thread thread = new Thread(this);
     private final FrameUtils frameUtils = new FrameUtils();
+
+    public final Thread thread = new Thread(this);
     private final Robot robot = new Robot();
 
     private final PrintWriter printWriter;
@@ -28,16 +28,26 @@ public class ServerListener implements Runnable {
         printWriter.flush();
     }
 
+    private boolean checkWelcomeMessage(String message) {
+        return !message.contains(",");
+    }
+
     private void handleMessage(String message) {
-        // Process raw message
         String[] messageContent = message.split(",");
-        // 1: int, 2: int, 3: boolean || String, 4: String || boolean
-        if (messageContent[2].equals("true") || messageContent[2].equals("false")) {
-
-        } else if (messageContent[2].equals("t")) {
-
+        // process server message content
+        if (!messageContent[0].equals("null") && !messageContent[1].equals("null")) {
+            robot.mouseMove(Integer.parseInt(messageContent[0]), Integer.parseInt(messageContent[1]));
         }
-        robot.mouseMove(Integer.parseInt(messageContent[0]), Integer.parseInt(messageContent[1]));
+
+        if (!messageContent[2].equals("0")) {
+            robot.mousePress(Integer.parseInt(messageContent[2]));
+            robot.mouseRelease(Integer.parseInt(messageContent[2]));
+        }
+
+        if (!messageContent[3].equals("0")) {
+            robot.keyPress(Integer.parseInt(messageContent[3]));
+            robot.keyRelease(Integer.parseInt(messageContent[3]));
+        }
     }
 
     private void createScreenshot() {
@@ -51,14 +61,17 @@ public class ServerListener implements Runnable {
 
     @Override
     public void run() {
-        thread.start();
         try {
             BufferedReader bf = new BufferedReader(inputStreamReader);
 
             String serverMessage;
 
             while ((serverMessage = bf.readLine()) != null) {
-                handleMessage(serverMessage);
+                if (checkWelcomeMessage(serverMessage)) {
+                    System.out.println(serverMessage);
+                } else {
+                    handleMessage(serverMessage);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

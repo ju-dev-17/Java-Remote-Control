@@ -5,7 +5,6 @@ import server.gui.model.ClientDataModel;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +19,9 @@ public class ServerSocketService {
             try (final ServerSocket serverSocket = new ServerSocket(1234)) {
                 Socket client = serverSocket.accept();
                 clients.add(client);
-                System.out.println("✅ client[" + client.getInetAddress().getHostAddress() + "] successfully connected.");
-                broadcast("✅ client[" + client.getInetAddress().getHostAddress() + "] successfully connected.");
+                String res = "✅ client[" + client.getInetAddress().getHostAddress() + "] successfully connected.";
+                System.out.println(res);
+                broadcast(res);
 
                 Thread clientThread = new Thread(() -> {
                     try {
@@ -33,10 +33,16 @@ public class ServerSocketService {
 
                 Thread serverMessanger = new Thread(() -> {
                     try {
-                        ClientDataModel data = remoteControlFrame.getClientDataModel();
                         while (true) {
-                            if (remoteControlFrame.getClientDataModel() != data) {
-                                sendClientData(client, remoteControlFrame.getClientDataModel());
+                            // if frame is locked
+                            if (remoteControlFrame.getClientDataModel().getPressendKey() == 113) {
+                                ClientDataModel data = remoteControlFrame.getClientDataModel();
+                                sendClientData(client, data);
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     } catch (IOException e) {
@@ -65,7 +71,7 @@ public class ServerSocketService {
 
     private void sendClientData(Socket clientSocket, ClientDataModel data) throws IOException {
         PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-        printWriter.println(data.getMousePosition().x + "," + data.getMousePosition().y);
+        printWriter.println(data.toString());
     }
 
     private void handleClient(Socket clientSocket) throws IOException {

@@ -16,11 +16,12 @@ public class Client {
     }
 
     public void startClient() {
-        try (Socket client = new Socket(hostUtils.getHostAddress(), port)) {
+        try {
+            Socket client = new Socket(hostUtils.getHostAddress(), port);
             PrintWriter printWriter = new PrintWriter(client.getOutputStream());
             InputStreamReader inputStreamReader = new InputStreamReader(client.getInputStream());
             // Start server listener
-            new ServerListener(printWriter, inputStreamReader);
+            new ServerListener(printWriter, inputStreamReader).thread.start();
         } catch (Exception e) {
             startClient();
         }
